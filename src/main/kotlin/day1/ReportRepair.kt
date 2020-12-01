@@ -10,11 +10,11 @@ class ReportRepair {
             .filterNot { it.isEmpty() }
             .map { x -> x.toLong() }
 
-        val combinations: Set<Pair<Long, Long>> = input.combine2()
+        val combinations: List<List<Long>> = input.combine2()
 
         return combinations
-            .filter { it.first + it.second == 2020L }
-            .map { it.first * it.second }
+            .filter { it.sum() == 2020L }
+            .map { it.fold(1L, { p, i -> p * i }) }
             .first()
     }
 
@@ -34,17 +34,17 @@ class ReportRepair {
             .first()
     }
 
-    private fun <T> List<T>.combine2(): Set<Pair<T, T>> {
-        tailrec fun rec(acc: Set<Pair<T, T>>, remaining: List<T>): Set<Pair<T, T>> {
+    private fun <T> List<T>.combine2(): List<List<T>> {
+        tailrec fun rec(acc: List<List<T>>, remaining: List<T>): List<List<T>> {
             return if (remaining.isEmpty()) acc else {
                 val head: T = remaining.first()
                 val tail = remaining.drop(1)
 
-                rec(acc + tail.map { Pair(head, it) }, tail)
+                rec(acc + tail.map { listOf(head, it) }, tail)
             }
         }
 
-        return rec(emptySet(), this)
+        return rec(emptyList(), this)
     }
 
     private fun combine3(input: List<Long>): Set<Triple<Long, Long, Long>> {
@@ -55,10 +55,21 @@ class ReportRepair {
 
                 val combinations = tail.combine2()
 
-                rec(acc + combinations.map { Triple(head, it.first, it.second) }, tail)
+                rec(acc + combinations.map { Triple(head, it.first(), it[1]) }, tail)
             }
         }
 
         return rec(emptySet(), input)
+    }
+
+    private fun <T> combine(n: Int, input: List<T>): List<List<T>> {
+        return if (n == 0) listOf(emptyList()) else {
+            val head: T = input.first()
+            val tail: List<T> = input.drop(1)
+            val tails: List<List<T>> = combine(n - 1, tail)
+            val withHead: List<List<T>> = tails.map { t -> listOf(head) + t }
+            val others: List<List<T>> = combine(n, tail)
+            withHead + others
+        }
     }
 }
