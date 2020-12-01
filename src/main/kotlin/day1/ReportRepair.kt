@@ -10,7 +10,7 @@ class ReportRepair {
             .filterNot { it.isEmpty() }
             .map { x -> x.toLong() }
 
-        val combinations: List<List<Long>> = input.combine2()
+        val combinations: List<List<Long>> = input.combine(2)
 
         return combinations
             .filter { it.sum() == 2020L }
@@ -26,49 +26,21 @@ class ReportRepair {
             .filterNot { it.isEmpty() }
             .map { x -> x.toLong() }
 
-        val combinations: Set<Triple<Long, Long, Long>> = combine3(input)
+        val combinations: List<List<Long>> = input.combine(3)
 
         return combinations
-            .filter { it.first + it.second + it.third == 2020L }
-            .map { it.first * it.second * it.third }
+            .filter { it.sum() == 2020L }
+            .map { it.fold(1L, { p, i -> p * i }) }
             .first()
     }
 
-    private fun <T> List<T>.combine2(): List<List<T>> {
-        tailrec fun rec(acc: List<List<T>>, remaining: List<T>): List<List<T>> {
-            return if (remaining.isEmpty()) acc else {
-                val head: T = remaining.first()
-                val tail = remaining.drop(1)
-
-                rec(acc + tail.map { listOf(head, it) }, tail)
-            }
-        }
-
-        return rec(emptyList(), this)
-    }
-
-    private fun combine3(input: List<Long>): Set<Triple<Long, Long, Long>> {
-        tailrec fun rec(acc: Set<Triple<Long, Long, Long>>, remaining: List<Long>): Set<Triple<Long, Long, Long>> {
-            return if (remaining.isEmpty()) acc else {
-                val head = remaining.first()
-                val tail = remaining.drop(1)
-
-                val combinations = tail.combine2()
-
-                rec(acc + combinations.map { Triple(head, it.first(), it[1]) }, tail)
-            }
-        }
-
-        return rec(emptySet(), input)
-    }
-
-    private fun <T> combine(n: Int, input: List<T>): List<List<T>> {
+    private fun <T> List<T>.combine(n: Int): List<List<T>> {
         return if (n == 0) listOf(emptyList()) else {
-            val head: T = input.first()
-            val tail: List<T> = input.drop(1)
-            val tails: List<List<T>> = combine(n - 1, tail)
+            val head: T = this.first()
+            val tail: List<T> = this.drop(1)
+            val tails: List<List<T>> = tail.combine(n - 1)
             val withHead: List<List<T>> = tails.map { t -> listOf(head) + t }
-            val others: List<List<T>> = combine(n, tail)
+            val others: List<List<T>> = if (n <= tail.size) tail.combine(n) else emptyList()
             withHead + others
         }
     }
