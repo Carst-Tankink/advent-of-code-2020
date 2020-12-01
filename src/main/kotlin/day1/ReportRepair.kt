@@ -1,8 +1,8 @@
 package day1
 
-class ReportRepair {
+class ReportRepair(private val inputFile: String) {
 
-    fun solveStar1(inputFile: String): Long {
+    fun solveStar1(): Long {
         val input: List<Long> = this.javaClass
             .getResource(inputFile)
             .readText()
@@ -18,7 +18,7 @@ class ReportRepair {
             .first()
     }
 
-    fun solveStar2(inputFile: String): Long {
+    fun solveStar2(): Long {
         val input: List<Long> = this.javaClass
             .getResource(inputFile)
             .readText()
