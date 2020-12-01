@@ -2,25 +2,19 @@ package day1
 
 import structure.Solution
 
-class ReportRepair(inputFile: String) : Solution(inputFile) {
+class ReportRepair(inputFile: String) : Solution<Long, Long>(inputFile) {
 
-    override fun star1(): Long = getCombination(2)
-    override fun star2(): Long = getCombination(3)
+    override fun parse(line: String): Long = line.toLong()
+    override fun List<Long>.solve1(): Long = getCombination(2)
+    override fun List<Long>.solve2(): Long = getCombination(3)
 
-    private fun getCombination(size: Int) = parseInput()
+    private fun getCombination(size: Int) = data
         .combine(size)
         .filter { it.sum() == 2020L }
-        .map { it.fold(1L, { p, i -> p * i }) }
+        .map { it.product() }
         .first()
 
-    private fun parseInput(): List<Long> {
-        return javaClass
-            .getResource(fileName)
-            .readText()
-            .lines()
-            .filterNot { it.isEmpty() }
-            .map { x -> x.toLong() }
-    }
+    private fun List<Long>.product() = this.fold(1L, { p, i -> p * i })
 
     private fun <T> List<T>.combine(n: Int): List<List<T>> {
         return if (n == 0) listOf(emptyList()) else {

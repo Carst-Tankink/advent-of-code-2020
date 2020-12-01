@@ -1,7 +1,18 @@
 package structure
 
-abstract class Solution(open val fileName: String) {
+abstract class Solution<Input, SolutionType>(fileName: String) {
+    fun star1(): SolutionType = data.solve1()
+    fun star2(): SolutionType = data.solve2()
 
-    abstract fun star1(): Long
-    abstract fun star2(): Long
+    val data: List<Input> =  javaClass
+        .getResource(fileName)
+        .readText()
+        .lines()
+        .filterNot { it.isEmpty() }
+        .map { parse(it)}
+
+    abstract fun parse(line: String): Input
+    abstract fun List<Input>.solve1(): SolutionType
+    abstract fun List<Input>.solve2(): SolutionType
+
 }
