@@ -6,12 +6,12 @@ data class Policy(val character: Char, val lower: Int, val upper: Int)
 data class PasswordRecord(val password: String, val policy: Policy)
 class PasswordPhilosophy(inputFile: String) : Solution<PasswordRecord, Int>(inputFile) {
     override fun parse(line: String): PasswordRecord {
-        val data: List<String> = line.split(" ")
-        val bounds = data[0].split("-")
-        val lower = bounds[0].toInt()
-        val upper = bounds[1].toInt()
-        val character = data[1][0]
-        val password = data[2]
+        val matcher = """(\d+)-(\d+) ([a-z]): ([a-z]+)""".toRegex()
+        val match = matcher.matchEntire(line)?.groupValues
+        val lower = match?.get(1)?.toInt() ?: -1
+        val upper = match?.get(2)?.toInt() ?: -1
+        val character = (match?.get(3)?.get(0) ?: 'Z')
+        val password = match?.get(4) ?: ""
 
         return PasswordRecord(password, Policy(character, lower, upper))
     }
