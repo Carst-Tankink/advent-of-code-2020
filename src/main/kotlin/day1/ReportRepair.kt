@@ -1,6 +1,7 @@
 package day1
 
-import structure.Solution
+import util.Solution
+import util.product
 
 class ReportRepair(inputFile: String) : Solution<Long, Long>(inputFile) {
 
@@ -13,8 +14,6 @@ class ReportRepair(inputFile: String) : Solution<Long, Long>(inputFile) {
         .filter { it.sum() == 2020L }
         .map { it.product() }
         .first()
-
-    private fun List<Long>.product() = this.fold(1L, { p, i -> p * i })
 
     private fun <T> List<T>.combine(n: Int): List<List<T>> {
         return if (n == 0) listOf(emptyList()) else {

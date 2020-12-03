@@ -1,6 +1,6 @@
 package day2
 
-import structure.Solution
+import util.Solution
 
 data class Policy(val character: Char, val lower: Int, val upper: Int)
 data class PasswordRecord(val password: String, val policy: Policy)

@@ -1,4 +1,4 @@
-package structure
+package util
 
 abstract class Solution<Input, SolutionType>(fileName: String) {
     fun star1(): SolutionType = data.solve1()

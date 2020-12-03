@@ -1,6 +1,7 @@
 package day3
 
-import structure.Solution
+import util.Solution
+import util.product
 
 
 class TobogganTrajectory(fileName: String) : Solution<List<Long>, Long>(fileName) {
@@ -29,6 +30,6 @@ class TobogganTrajectory(fileName: String) : Solution<List<Long>, Long>(fileName
 
         return options
             .map { treesHit(it.first, it.second) }
-            .fold(1, { acc, i -> acc * i })
+            .product()
     }
 }
