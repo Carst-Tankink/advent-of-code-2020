@@ -1,6 +1,6 @@
 fun main() {
-    val sample = day2.PasswordPhilosophy("/day2/sample")
-    val input = day2.PasswordPhilosophy("/day2/input")
+    val sample = day3.TobogganTrajectory("/day3/sample")
+    val input = day3.TobogganTrajectory("/day3/input")
 
     println("Sample: ${sample.star1()}")
     println("Solution: ${input.star1()}")
