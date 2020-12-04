@@ -41,7 +41,7 @@ class PassportProcessing(fileName: String) : Solution<List<Line>, Long>(fileName
 
     override fun List<List<Line>>.solve1(): Long {
         return passports(this)
-            .count { passport -> isValid(passport)}
+            .count { isValid(it) }
             .toLong()
     }
 
@@ -49,10 +49,81 @@ class PassportProcessing(fileName: String) : Solution<List<Line>, Long>(fileName
         val required = setOf("byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid")
         val labels = passport.map { it.label }
         return required.all {
-            labels.contains(it) }
+            labels.contains(it)
+        }
     }
 
     override fun List<List<Line>>.solve2(): Long {
-        TODO("Not yet implemented")
+        return passports(this)
+            .count { hasValidData(it) }
+            .toLong()
+    }
+
+    private val validations: Set<(PassportField) -> Boolean> = setOf(
+        { field: PassportField -> field.label == "byr" && testByr(field.value) },
+        { field: PassportField -> field.label == "iyr" && testIyr(field.value) },
+        { field: PassportField -> field.label == "eyr" && testEyr(field.value) },
+        { field: PassportField -> field.label == "hgt" && testHgt(field.value) },
+        { field: PassportField -> field.label == "hcl" && testHcl(field.value) },
+        { field: PassportField -> field.label == "ecl" && testEcl(field.value) },
+        { field: PassportField -> field.label == "pid" && testPid(field.value) },
+    )
+
+    private fun testPid(value: String): Boolean {
+        return value.length == 9 && value.all { Character.isDigit(it) }
+    }
+
+    private fun testEcl(value: String): Boolean {
+        return value in setOf("amb", "blu", "brn", "gry", "grn", "hzl", "oth")
+    }
+
+    private fun testByr(value: String): Boolean {
+        return checkYearBounds(value, 1920, 2002)
+    }
+
+    private fun testIyr(value: String): Boolean {
+        return checkYearBounds(value, 2010, 2020)
+    }
+
+    private fun testEyr(value: String): Boolean {
+        return checkYearBounds(value, 2020, 2030)
+    }
+
+    private fun checkYearBounds(value: String, lower: Int, upper: Int): Boolean {
+        val asLong = value.toLong()
+        return value.length == 4 && lower <= asLong && asLong <= upper
+    }
+
+    private fun testHgt(value: String): Boolean {
+        return checkCm(value) || checkIn(value)
+    }
+
+    private fun checkCm(value: String): Boolean {
+        val suffix = "cm"
+        return if (!value.endsWith(suffix)) false else {
+            val asLong = value.replace(suffix, "").toLong()
+            return 150 <= asLong && asLong <= 193
+        }
+    }
+
+    private fun checkIn(value: String): Boolean {
+        val suffix = "in"
+        return if (!value.endsWith(suffix)) false else {
+            val asLong = value.replace(suffix, "").toLong()
+            return 59 <= asLong && asLong <= 76
+        }
+    }
+
+    private fun testHcl(value: String): Boolean {
+
+        val all = value.drop(1)
+            .all { (it in 'a'..'f') || Character.isDigit(it) }
+        return value.length == 7 && value.startsWith("#") && all
+    }
+
+    private fun hasValidData(passport: List<PassportField>): Boolean {
+        return validations.all { validation ->
+            passport.any { validation(it) }
+        }
     }
 }
