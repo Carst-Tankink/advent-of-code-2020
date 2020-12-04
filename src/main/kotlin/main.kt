@@ -1,6 +1,6 @@
 fun main() {
-    val sample = day3.TobogganTrajectory("/day3/sample")
-    val input = day3.TobogganTrajectory("/day3/input")
+    val sample = day4.PassportProcessing("/day4/sample")
+    val input = day4.PassportProcessing("/day4/input")
 
     println("Sample: ${sample.star1()}")
     println("Solution: ${input.star1()}")
