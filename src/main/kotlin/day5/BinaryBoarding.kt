@@ -2,19 +2,23 @@ package day5
 
 import util.Solution
 
-class BinaryBoarding(fileName: String) : Solution<String, Long>(fileName) {
-    override fun parse(line: String): String {
+class BinaryBoarding(fileName: String) : Solution<Long, Long>(fileName) {
+    override fun parse(line: String): Long {
         return line
+            .map { if (it == 'R' || it == 'B') '1'  else '0'}
+            .joinToString("")
+            .toLong(2)}
+
+    override fun List<Long>.solve1(): Long {
+        return this.maxOrNull() ?: 0
     }
 
-    override fun List<String>.solve1(): Long {
-        return this
-            .map { line -> line.map { if (it == 'R' || it == 'B') '1'  else '0'}.joinToString("")}
-            .map { line -> line.toLong(2)}
-            .maxOrNull() ?: 0
-    }
-
-    override fun List<String>.solve2(): Long {
-        TODO("Not yet implemented")
+    override fun List<Long>.solve2(): Long {
+        val sorted = this.sorted()
+        val start = sorted.first()
+        val end = sorted.last()
+        return (start..end)
+            .filterNot { it in sorted }
+            .first()
     }
 }
