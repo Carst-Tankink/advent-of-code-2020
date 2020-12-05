@@ -1,6 +1,6 @@
 fun main() {
-    val sample = day4.PassportProcessing("/day4/sample")
-    val input = day4.PassportProcessing("/day4/input")
+    val sample = day5.BinaryBoarding("/day5/sample")
+    val input = day5.BinaryBoarding("/day5/input")
 
     println("Sample: ${sample.star1()}")
     println("Solution: ${input.star1()}")
