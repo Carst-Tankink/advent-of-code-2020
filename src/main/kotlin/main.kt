@@ -1,6 +1,6 @@
 fun main() {
-    val sample = day5.BinaryBoarding("/day5/sample")
-    val input = day5.BinaryBoarding("/day5/input")
+    val sample = day6.CustomCustoms("/day6/sample")
+    val input = day6.CustomCustoms("/day6/input")
 
     println("Sample: ${sample.star1()}")
     println("Solution: ${input.star1()}")
