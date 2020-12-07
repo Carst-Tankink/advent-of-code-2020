@@ -4,6 +4,9 @@ import util.Solution
 
 data class Bag(val shade: String, val colour: String)
 data class Rule(val outer: Bag, val inner: List<Pair<Long, Bag>>)
+
+val shinyGoldBag = Bag("shiny", "gold")
+
 class HandyHaversacks(fileName: String) : Solution<Rule, Long>(fileName) {
     override fun parse(line: String): Rule {
         val ruleFormat: Regex = """(.* bags) contain (.*)\.""".toRegex()
@@ -24,7 +27,19 @@ class HandyHaversacks(fileName: String) : Solution<Rule, Long>(fileName) {
     }
 
     override fun List<Rule>.solve1(): Long {
-        TODO("Not yet implemented")
+        tailrec fun rec(acc: Set<Bag>, toCheck: List<Bag>): Set<Bag> {
+            return if (toCheck.isEmpty()) acc else {
+                val head = toCheck.first()
+                val tail = toCheck.drop(1)
+
+                val bagsToCheck = this
+                    .filter { it.inner.any { bagCount -> bagCount.second == head } }
+                    .map { it.outer }
+                rec(acc + bagsToCheck, tail + bagsToCheck)
+            }
+        }
+
+        return rec(emptySet(), listOf(shinyGoldBag)).size.toLong()
     }
 
     override fun List<Rule>.solve2(): Long {
