@@ -30,12 +30,11 @@ class HandyHaversacks(fileName: String) : Solution<Rule, Long>(fileName) {
         tailrec fun rec(acc: Set<Bag>, toCheck: List<Bag>): Set<Bag> {
             return if (toCheck.isEmpty()) acc else {
                 val head = toCheck.first()
-                val tail = toCheck.drop(1)
 
                 val bagsToCheck = this
                     .filter { it.inner.any { bagCount -> bagCount.second == head } }
                     .map { it.outer }
-                rec(acc + bagsToCheck, tail + bagsToCheck)
+                rec(acc + bagsToCheck, toCheck.drop(1) + bagsToCheck)
             }
         }
 
@@ -43,6 +42,12 @@ class HandyHaversacks(fileName: String) : Solution<Rule, Long>(fileName) {
     }
 
     override fun List<Rule>.solve2(): Long {
-        TODO("Not yet implemented")
+        fun rec(factor: Long, toCheck: Bag): Long {
+            val contains = this.find { it.outer == toCheck }!!.inner
+            val needed = factor * contains.map { rec(it.first, it.second) }.sum()
+            return factor + needed
+        }
+
+        return rec(1L, shinyGoldBag)
     }
 }
