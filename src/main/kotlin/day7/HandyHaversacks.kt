@@ -48,6 +48,6 @@ class HandyHaversacks(fileName: String) : Solution<Rule, Long>(fileName) {
             return factor + needed
         }
 
-        return rec(1L, shinyGoldBag)
+        return rec(1L, shinyGoldBag) - 1 // Do not count inner bag.
     }
 }
