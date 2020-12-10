@@ -2,7 +2,7 @@ package day9
 
 import util.Solution
 
-class EncodingError(fileName: String) : Solution<Long, Long>(fileName) {
+class EncodingError(fileName: String, val windowSize: Int) : Solution<Long, Long>(fileName) {
     override fun parse(line: String): Long {
         return line.toLong()
     }
@@ -19,11 +19,40 @@ class EncodingError(fileName: String) : Solution<Long, Long>(fileName) {
             }
         }
 
-        return rec(this.take(25), this.drop(25))
+        return rec(this.take(windowSize), this.drop(windowSize))
     }
+
 
     override fun List<Long>.solve2(): Long {
-        TODO("Not yet implemented")
+        val weakness = solve1()
+        val range = findRange(this, weakness).sorted()
+        return range.first() + range.last()
     }
 
+    private fun findRange(list: List<Long>, weakness: Long): List<Long> {
+        fun getBreakingRange(togo: List<Long>): List<Long> {
+            tailrec fun rec(acc: List<Long>, left: List<Long>, sum: Long): List<Long> {
+                return when {
+                    (sum > weakness) -> emptyList()
+                    (sum == weakness && acc.size >= 2) -> acc
+                    else -> {
+                        val head = left.first()
+                        rec(acc + head, left.drop(1), sum + head)
+                    }
+                }
+            }
+
+            return rec(emptyList(), togo, 0)
+        }
+
+        tailrec fun findFrom(togo: List<Long>): List<Long> {
+            val range = getBreakingRange(togo)
+
+            return if (range.isNotEmpty()) range else {
+                findFrom(togo.drop(1))
+            }
+        }
+
+        return findFrom(list)
+    }
 }

@@ -1,6 +1,6 @@
 fun main() {
-    val sample = day10.AdapterArray("/day10/sample")
-    val input = day10.AdapterArray("/day10/input")
+    val sample = day9.EncodingError("/day9/sample", 5)
+    val input = day9.EncodingError("/day9/input", 25)
 
     println("Sample: ${sample.star1()}")
     println("Solution: ${input.star1()}")
