@@ -1,6 +1,6 @@
 fun main() {
-    val sample = day9.EncodingError("/day9/sample", 5)
-    val input = day9.EncodingError("/day9/input", 25)
+    val sample = day11.SeatingSystem("/day11/sample")
+    val input = day11.SeatingSystem("/day11/input")
 
     println("Sample: ${sample.star1()}")
     println("Solution: ${input.star1()}")
