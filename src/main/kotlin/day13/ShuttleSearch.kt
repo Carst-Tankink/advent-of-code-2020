@@ -2,7 +2,8 @@ package day13
 
 import util.Solution
 
-class ShuttleSearch(fileName: String) : Solution<List<IndexedValue<Long>>, Long>(fileName) {
+class ShuttleSearch(fileName: String, private val startValue: Long) : Solution<List<IndexedValue<Long>>, Long>(fileName) {
+
     override fun parse(line: String): List<IndexedValue<Long>> {
         return line
             .split(',')
@@ -21,13 +22,13 @@ class ShuttleSearch(fileName: String) : Solution<List<IndexedValue<Long>>, Long>
     }
 
     override fun List<List<IndexedValue<Long>>>.solve2(): Long {
-        println("List ${this[1]}")
+        val increments: Map<Int, Long> = this[1].groupBy { it.index }.mapValues { it.value.first().value }
         return this[1]
-            .lcm()
+            .map { IndexedValue(it.index, (startValue / it.value + 1) * it.value) }
+            .lcm(increments)
     }
 
-    private fun List<IndexedValue<Long>>.lcm(): Long {
-        val increments: Map<Int, Long> = this.groupBy { it.index }.mapValues { it.value.first().value }
+    private fun List<IndexedValue<Long>>.lcm(increments: Map<Int, Long>): Long {
         tailrec fun rec(current: List<IndexedValue<Long>>): Long {
             val first = current.first()
             val minimal = current.minByOrNull { it.value }!!
