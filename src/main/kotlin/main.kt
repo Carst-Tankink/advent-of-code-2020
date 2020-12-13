@@ -1,6 +1,6 @@
 fun main() {
-    val sample = day11.SeatingSystem("/day11/sample")
-    val input = day11.SeatingSystem("/day11/input")
+    val sample = day13.ShuttleSearch("/day13/sample")
+    val input = day13.ShuttleSearch("/day13/input")
 
     println("Sample: ${sample.star1()}")
     println("Solution: ${input.star1()}")
