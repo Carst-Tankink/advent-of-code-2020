@@ -1,6 +1,6 @@
 fun main() {
-    val sample = day13.ShuttleSearch("/day13/sample", 1068779)
-    val input = day13.ShuttleSearch("/day13/input", 100000000000000)
+    val sample = day14.DockingData("/day14/sample")
+    val input = day14.DockingData("/day14/input")
 
     println("Sample: ${sample.star1()}")
     println("Solution: ${input.star1()}")
