@@ -2,7 +2,7 @@ package day13
 
 import util.Solution
 
-class ShuttleSearch(fileName: String, private val startValue: Long) : Solution<List<IndexedValue<Long>>, Long>(fileName) {
+class ShuttleSearch(fileName: String) : Solution<List<IndexedValue<Long>>, Long>(fileName) {
 
     override fun parse(line: String): List<IndexedValue<Long>> {
         return line
@@ -22,10 +22,18 @@ class ShuttleSearch(fileName: String, private val startValue: Long) : Solution<L
     }
 
     override fun List<List<IndexedValue<Long>>>.solve2(): Long {
-        val increments: Map<Int, Long> = this[1].groupBy { it.index }.mapValues { it.value.first().value }
-        return this[1]
-            .map { IndexedValue(it.index, (startValue / it.value + 1) * it.value) }
-            .lcm(increments)
+        return this[1].fold(Pair(0L, 1L)) { acc, entry ->
+            val alignment = findAlignment(acc.first, acc.second, entry)
+
+            val newIncrement = acc.second * entry.value
+            Pair(alignment, newIncrement)
+        }.first
+    }
+
+    private tailrec fun findAlignment(acc: Long, increment: Long, entry: IndexedValue<Long>): Long {
+        return if ((acc + entry.index) % entry.value == 0L) acc else {
+            findAlignment(acc + increment, increment, entry)
+        }
     }
 
     private fun List<IndexedValue<Long>>.lcm(increments: Map<Int, Long>): Long {

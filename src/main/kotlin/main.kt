@@ -1,6 +1,6 @@
 fun main() {
-    val sample = day12.RainRisk("/day12/sample")
-    val input = day12.RainRisk("/day12/input")
+    val sample = day13.ShuttleSearch("/day13/sample")
+    val input = day13.ShuttleSearch("/day13/input")
 
     println("Sample: ${sample.star1()}")
     println("Solution: ${input.star1()}")
