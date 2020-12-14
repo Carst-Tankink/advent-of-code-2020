@@ -21,7 +21,7 @@ enum class Direction {
         WEST -> SOUTH
     }
 
-    fun right() = when(this) {
+    fun right() = when (this) {
         NORTH -> EAST
         EAST -> SOUTH
         SOUTH -> WEST
@@ -29,7 +29,9 @@ enum class Direction {
     }
 }
 
-data class Ferry(val facing: Direction, val x: Long, val y: Long)
+data class Waypoint(val x: Long, val y: Long)
+
+data class Ferry(val facing: Direction, val x: Long, val y: Long, val waypoint: Waypoint)
 class RainRisk(fileName: String) : Solution<Instruction, Long>(fileName) {
     override fun parse(line: String): Instruction {
         val action = when (line.first()) {
@@ -47,7 +49,14 @@ class RainRisk(fileName: String) : Solution<Instruction, Long>(fileName) {
     }
 
     override fun List<Instruction>.solve1(): Long {
-        val state = this.fold(Ferry(Direction.EAST, 0, 0)) { ferry, instruction -> doInstruction(ferry, instruction) }
+        val state = this.fold(
+            Ferry(
+                Direction.EAST,
+                0,
+                0,
+                Waypoint(10, 1)
+            )
+        ) { ferry, instruction -> doInstruction(ferry, instruction) }
         return state.x.absoluteValue + state.y.absoluteValue
     }
 
@@ -76,6 +85,7 @@ class RainRisk(fileName: String) : Solution<Instruction, Long>(fileName) {
         return ferry.copy(facing = rec(ferry.facing, instruction.value))
 
     }
+
     private fun turnRight(ferry: Ferry, instruction: Instruction): Ferry {
         tailrec fun rec(currentFacing: Direction, leftToGo: Int): Direction {
             return if (leftToGo == 0) currentFacing else rec(currentFacing.right(), leftToGo - 90)
@@ -95,8 +105,45 @@ class RainRisk(fileName: String) : Solution<Instruction, Long>(fileName) {
     private fun moveNorth(ferry: Ferry, instruction: Instruction): Ferry = ferry.copy(y = ferry.y + instruction.value)
 
     override fun List<Instruction>.solve2(): Long {
-        TODO("Not yet implemented")
+        val finalFerry = this.fold(
+            Ferry(
+                Direction.EAST,
+                0,
+                0,
+                Waypoint(10, 1)
+            )
+        ) { ferry, instruction -> updateFerry(ferry, instruction) }
+
+        return finalFerry.x.absoluteValue + finalFerry.y.absoluteValue
     }
+
+    private fun updateFerry(ferry: Ferry, instruction: Instruction): Ferry {
+        val waypoint = ferry.waypoint
+        return when (instruction.act) {
+            Action.NORTH -> ferry.copy(waypoint = updateWaypoint(waypoint, instruction.value, 0))
+            Action.EAST -> ferry.copy(waypoint = updateWaypoint(waypoint, 0, instruction.value))
+            Action.SOUTH -> ferry.copy(waypoint = updateWaypoint(waypoint, -instruction.value, 0))
+            Action.WEST -> ferry.copy(waypoint = updateWaypoint(waypoint, 0, -instruction.value))
+            Action.LEFT -> ferry.copy(waypoint = turnWpLeft(waypoint, instruction.value))
+            Action.RIGHT -> ferry.copy(waypoint = turnWpRight(waypoint, instruction.value))
+            Action.FORWARD -> ferry.copy(
+                x = ferry.x + (waypoint.x * instruction.value),
+                y = ferry.y + (waypoint.y * instruction.value)
+            )
+        }
+    }
+
+    private tailrec fun turnWpRight(waypoint: Waypoint, value: Int): Waypoint {
+        return if (value == 0) waypoint else turnWpRight(waypoint.copy(x = waypoint.y, y = -waypoint.x), value - 90)
+    }
+
+    private tailrec fun turnWpLeft(waypoint: Waypoint, value: Int): Waypoint {
+        return if (value == 0) waypoint else turnWpLeft(waypoint.copy(x = -waypoint.y, y = waypoint.x), value - 90)
+    }
+
+
+    private fun updateWaypoint(waypoint: Waypoint, north: Int, east: Int): Waypoint =
+        waypoint.copy(y = waypoint.y + north, x = waypoint.x + east)
 
 }
 

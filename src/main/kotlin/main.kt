@@ -1,6 +1,6 @@
 fun main() {
-    val sample = day14.DockingData("/day14/sample")
-    val input = day14.DockingData("/day14/input")
+    val sample = day12.RainRisk("/day12/sample")
+    val input = day12.RainRisk("/day12/input")
 
     println("Sample: ${sample.star1()}")
     println("Solution: ${input.star1()}")
