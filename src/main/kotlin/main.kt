@@ -1,6 +1,6 @@
 fun main() {
-    val sample = day13.ShuttleSearch("/day13/sample")
-    val input = day13.ShuttleSearch("/day13/input")
+    val sample = day15.RambunctiousRecitation("/day15/sample")
+    val input = day15.RambunctiousRecitation("/day15/input")
 
     println("Sample: ${sample.star1()}")
     println("Solution: ${input.star1()}")
