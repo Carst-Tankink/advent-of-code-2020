@@ -6,22 +6,26 @@ class RambunctiousRecitation(fileName: String) : Solution<Long, Long>(fileName) 
     override fun parse(line: String): Long = line.toLong()
 
     override fun List<Long>.solve1(): Long {
-        tailrec fun rec(recited: List<Long>): Long {
-            val head = recited.last()
-            return if (recited.size == 2020) head else {
-                val tail = recited.take(recited.size - 1)
-                val nextSpoken = if (head !in tail) 0 else {
-                    recited.size - tail.lastIndexOf(head) - 1
-                }
-
-                rec( recited + listOf(nextSpoken.toLong()))
-            }
-        }
-
-        return rec(this)
+        return speakUntilStop(2020L)
     }
 
     override fun List<Long>.solve2(): Long {
-        TODO("Not yet implemented")
+        return speakUntilStop(30000000L)
+    }
+
+    private fun List<Long>.speakUntilStop(stop: Long): Long {
+        val spoken: MutableMap<Long, Long> = emptyMap<Long, Long>().toMutableMap()
+        tailrec fun rec(step: Long, toSpeak: Long): Long {
+            return if (step == stop) toSpeak else {
+                val speakNext = step - (spoken[toSpeak] ?: step)
+
+                spoken[toSpeak] = step
+                rec(step + 1, speakNext)
+            }
+        }
+
+        val start = spoken.putAll(this.mapIndexed { index, value -> value to index.toLong() + 1 })
+
+        return rec(spoken.size.toLong() + 1, 0)
     }
 }
