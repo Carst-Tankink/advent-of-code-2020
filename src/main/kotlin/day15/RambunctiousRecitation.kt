@@ -24,7 +24,7 @@ class RambunctiousRecitation(fileName: String) : Solution<Long, Long>(fileName) 
             }
         }
 
-        val start = spoken.putAll(this.mapIndexed { index, value -> value to index.toLong() + 1 })
+        spoken.putAll(this.mapIndexed { index, value -> value to index.toLong() + 1 })
 
         return rec(spoken.size.toLong() + 1, 0)
     }
