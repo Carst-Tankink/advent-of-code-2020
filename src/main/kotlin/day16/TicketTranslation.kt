@@ -1,6 +1,7 @@
 package day16
 
 import util.Solution
+import util.product
 
 sealed class TicketInput
 data class TicketRule(val field: String, val first: IntRange, val second: IntRange) : TicketInput() {
@@ -59,8 +60,34 @@ class TicketTranslation(fileName: String) : Solution<TicketInput, Long>(fileName
                 it.fieldValues.any { value -> rules.none { r -> value in r.first || value in r.second } }
             }
 
-        println("Remaining ticket ${validTickets.size}")
+        val rulePositions: Map<TicketRule, Int> = determineRulePositions(rules.toSet(), validTickets)
+        return rulePositions.filterKeys { it.field.startsWith("departure") }
+            .values
+            .map { tickets.first().fieldValues[it].toLong() }
+            .product()
+    }
 
-        return -1
+    private fun determineRulePositions(rules: Set<TicketRule>, validTickets: List<Ticket>): Map<TicketRule, Int> {
+        tailrec fun rec(candidateIndices: List<Int>, acc: Map<TicketRule, Int>): Map<TicketRule, Int> {
+            return if (candidateIndices.isEmpty() && acc.keys == rules) acc else {
+                val candidatePositions =
+                    rules.map { rule ->
+                        rule to
+                                candidateIndices.filter { idx ->
+                                    validTickets.all {
+                                        val fieldValue = it.fieldValues[idx]
+                                        fieldValue in rule.first || fieldValue in rule.second
+                                    }
+                                }
+                    }.toMap()
+
+                val oneColumn =
+                    candidatePositions.entries.find { it.value.size == 1 } ?: error("No one-column position!")
+                val entry = oneColumn.key to oneColumn.value.first()
+                rec(candidateIndices - entry.second, acc + entry)
+            }
+        }
+
+        return rec(validTickets.first().fieldValues.indices.toList(), emptyMap())
     }
 }
