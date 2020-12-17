@@ -1,6 +1,6 @@
 fun main() {
-    val sample = day16.TicketTranslation("/day16/sample")
-    val input = day16.TicketTranslation("/day16/input")
+    val sample = day17.ConwayCubes("/day17/sample")
+    val input = day17.ConwayCubes("/day17/input")
 
     println("Sample: ${sample.star1()}")
     println("Solution: ${input.star1()}")
