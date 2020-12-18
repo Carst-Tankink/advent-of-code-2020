@@ -1,6 +1,6 @@
 fun main() {
-    val sample = day16.TicketTranslation("/day16/sample")
-    val input = day16.TicketTranslation("/day16/input")
+    val sample = day18.OperationOrder("/day18/sample")
+    val input = day18.OperationOrder("/day18/input")
 
     println("Sample: ${sample.star1()}")
     println("Solution: ${input.star1()}")
