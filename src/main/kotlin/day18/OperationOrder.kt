@@ -1,6 +1,7 @@
 package day18
 
 import util.Solution
+import util.product
 
 sealed class Symbol
 sealed class Operator : Symbol() {
@@ -36,17 +37,15 @@ class OperationOrder(fileName: String) : Solution<List<Symbol>, Long>(fileName) 
     }
 
     override fun List<List<Symbol>>.solve1(): Long {
-        val map = this.map { evaluate(it) }
-        return map
+        return map { evaluate(it) }
             .sum()
     }
 
     private fun evaluate(expression: List<Symbol>): Long {
         fun rec(lhs: Long, operator: Operator?, expr: List<Symbol>): Pair<Long, List<Symbol>> {
             return if (expr.isEmpty()) Pair(lhs, expr) else {
-                val head = expr.first()
                 val tail = expr.drop(1)
-                when (head) {
+                when (val head = expr.first()) {
                     is Number -> {
                         val newLhs = operator?.op(lhs, head.x) ?: head.x
                         rec(newLhs, null, tail)
@@ -67,6 +66,48 @@ class OperationOrder(fileName: String) : Solution<List<Symbol>, Long>(fileName) 
     }
 
     override fun List<List<Symbol>>.solve2(): Long {
-        TODO("Not yet implemented")
+        return map { evaluatePrecedence(it) }
+            .sum()
+    }
+
+    private fun evaluatePrecedence(expression: List<Symbol>): Long {
+        fun reduceLeft(expr: List<Symbol>): Long {
+            val head = expr.first()
+            return when {
+                expr.size == 1 && head is Number -> head.x
+                expr.filterIsInstance<Operator>().all { it is Mult } ->
+                    expr.filterIsInstance<Number>().map { it.x }.product()
+                else -> error("Unexpected: $expr")
+            }
+        }
+
+        fun rec(left: List<Symbol>, right: List<Symbol>): Pair<Long, List<Symbol>> {
+            return if (right.isEmpty()) Pair(reduceLeft(left), emptyList()) else {
+                val head = right.first()
+                val tail = right.drop(1)
+                when (head) {
+                    is Number -> rec(left + listOf(head), tail)
+                    is Mult -> rec(left + listOf(head), tail)
+                    is Plus -> {
+                        val lhs = left.last() as Number
+                        val rhs = when (val nextRight = tail.first()) {
+                            is Number -> Pair(nextRight.x, tail.drop(1))
+                            is ParenOpen ->  rec(emptyList(), tail.drop(1))
+                            else -> error("Unexpected: $nextRight")
+                        }
+
+                        val result = Plus.op(lhs.x, rhs.first)
+                        rec(left.dropLast(1) + listOf(Number(result)), rhs.second)
+                    }
+                    is ParenOpen -> {
+                        val subResult = rec(emptyList(), tail)
+                        rec(left + listOf(Number(subResult.first)), subResult.second)
+                    }
+                    is ParenClose -> Pair(reduceLeft(left), tail)
+                }
+            }
+        }
+
+        return rec(emptyList(), expression).first
     }
 }
