@@ -5,13 +5,13 @@ import util.Solution
 sealed class MessageOrRule
 data class Message(val msg: String) : MessageOrRule()
 sealed class MessageRule(val index: Int) : MessageOrRule() {
-    abstract fun consume(line: String, rules: Map<Int, MessageRule>): String?
+    abstract fun consume(line: String, rules: Map<Int, MessageRule>): List<String>
 }
 
 class CharRule(index: Int, private val character: Char) : MessageRule(index) {
 
-    override fun consume(line: String, rules: Map<Int, MessageRule>): String? {
-        return if (line.startsWith(character)) line.drop(1) else null
+    override fun consume(line: String, rules: Map<Int, MessageRule>): List<String> {
+        return if (line.startsWith(character)) listOf(line.drop(1)) else emptyList()
     }
 
     companion object {
@@ -24,9 +24,9 @@ class CharRule(index: Int, private val character: Char) : MessageRule(index) {
 }
 
 class AnyRule(index: Int, private val subRules: Pair<SeqRule, SeqRule>) : MessageRule(index) {
-    override fun consume(line: String, rules: Map<Int, MessageRule>): String? {
+    override fun consume(line: String, rules: Map<Int, MessageRule>): List<String> {
         val matchLeft = subRules.first.consume(line, rules)
-        return matchLeft ?: subRules.second.consume(line, rules)
+        return matchLeft + subRules.second.consume(line, rules)
     }
 
     companion object {
@@ -44,9 +44,9 @@ class AnyRule(index: Int, private val subRules: Pair<SeqRule, SeqRule>) : Messag
 }
 
 class SeqRule(index: Int, val subRules: List<Int>) : MessageRule(index) {
-    override fun consume(line: String, rules: Map<Int, MessageRule>): String? {
-        return subRules.fold(line as String?) { acc, rule ->
-            if (acc == null) null else rules[rule]!!.consume(acc, rules)
+    override fun consume(line: String, rules: Map<Int, MessageRule>): List<String> {
+        return subRules.fold(listOf(line)) { acc, rule ->
+            acc.map { rules[rule]!!.consume(it, rules) }.flatten()
         }
     }
 
@@ -92,7 +92,7 @@ class MonsterMessages(fileName: String) : Solution<MessageOrRule, Long>(fileName
         return lines
             .filterIsInstance<Message>()
             .map { it.msg }
-            .count { ruleSet[0]!!.consume(it, ruleSet)?.isEmpty() ?: false }
+            .count { ruleSet[0]!!.consume(it, ruleSet).any { l -> l.isEmpty() } }
             .toLong()
     }
 
