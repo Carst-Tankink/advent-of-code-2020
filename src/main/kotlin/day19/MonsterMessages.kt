@@ -97,6 +97,24 @@ class MonsterMessages(fileName: String) : Solution<MessageOrRule, Long>(fileName
     }
 
     override fun List<MessageOrRule>.solve2(): Long {
-        TODO("Not yet implemented")
+        val (rules, lines) = this.partition { it is MessageRule }
+
+        val ruleSet = rules
+            .filterIsInstance<MessageRule>()
+            .map {
+                val value = when (it.index) {
+                    8 -> AnyRule(8, Pair(SeqRule(-1, listOf(42)), SeqRule(-2, listOf(42, 8))))
+                    11 -> AnyRule(11, Pair(SeqRule(-1, listOf(42, 31)), SeqRule(-2, listOf(42, 11, 31))))
+                    else -> it
+                }
+                it.index to value
+            }
+            .toMap()
+
+        return lines
+            .filterIsInstance<Message>()
+            .map { it.msg }
+            .count { ruleSet[0]!!.consume(it, ruleSet).any { l -> l.isEmpty() } }
+            .toLong()
     }
 }
