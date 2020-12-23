@@ -50,6 +50,11 @@ data class Tile(val id: Long, val lines: List<String>) {
 }
 
 class JurassicJigsaw(fileName: String) : Solution<TilePart, Long>(fileName) {
+    private val monster: List<String> = javaClass
+        .getResource("/day20/monster")
+        .readText()
+        .lines()
+
     override fun parse(line: String): TilePart? {
         return if (line.isEmpty()) null else {
             val idPattern = """Tile (\d+):""".toRegex()
@@ -97,22 +102,58 @@ class JurassicJigsaw(fileName: String) : Solution<TilePart, Long>(fileName) {
     }
 
     override fun List<TilePart>.solve2(): Long {
+        val monsterSize = monster.map { it.count { c -> c == '#' } }.sum()
         val tiles = assembleTiles(this)
         val puzzle = assembleImage(tiles)
         val image = stitchImage(puzzle)
-        return -1
+        val numberOfMonsters = image.variants().map { findMonsters(it) }.maxOrNull() ?: 0
+
+        return image.lines.map { it.count { c -> c == '#' } }.sum() - (monsterSize.toLong() * numberOfMonsters)
+    }
+
+    private fun findMonsters(tile: Tile): Long {
+        val monsterHeight = monster.size
+        val monsterLength = monster.map {it.length}.maxOrNull() ?: 20
+        val offsets = 0..(tile.lines.size - monsterHeight)
+        val flatMap: List<List<String>> = offsets.flatMap { yOffset ->
+            val block = tile.lines.drop(yOffset).take(monsterHeight)
+
+            val maxXOffSet = tile.lines[0].length - monsterLength
+            (0..maxXOffSet).map { xOffSet ->
+                block.map { b -> b.drop(xOffSet).take(monsterLength) }
+            }
+        }
+        return flatMap.count { p ->
+            monster
+                .zip(p)
+                .all { (monsterLine, patternLine) ->
+                    monsterLine.zip(patternLine).filter { it.first == '#' }.all { it.first == it.second }
+                }
+        }.toLong()
     }
 
     private fun stitchImage(puzzle: List<List<Tile>>): Tile {
-        val strippedBorders: List<List<Tile>> = puzzle.flatMap { line ->
+        val strippedBorders: List<List<Tile>> = puzzle.map { line ->
             line.map {
                 val body = it.lines.subList(1, it.lines.size - 1).map { s -> s.substring(1, s.length - 1) }
-                return Tile(it.id, body)
+                Tile(it.id, body)
             }
         }
+        val tileSize = strippedBorders[0][0].lines.size
+        val sideLength = strippedBorders.size * tileSize
+        val range = 0 until sideLength
+        val pattern: List<String> = range.map { y ->
+            val tileY = y / tileSize
+            val offSetY = y % tileSize
+            range.map { x ->
+                val tileX = x / tileSize
+                val offSetX = x % tileSize
 
+                strippedBorders[tileY][tileX].lines[offSetY][offSetX]
+            }.joinToString("")
+        }
 
-        TODO("Not yet implemented")
+        return Tile(42, pattern)
     }
 
     private fun assembleImage(tiles: List<Tile>): List<List<Tile>> {
@@ -161,7 +202,7 @@ class JurassicJigsaw(fileName: String) : Solution<TilePart, Long>(fileName) {
                     }
                     else -> {
                         val left = current[x - 1].right
-                        val above = acc[y-1][x].bottom
+                        val above = acc[y - 1][x].bottom
                         val matchingTile = neighbour(left, remainingTiles) ?: error("No tile found")
                         val orientation = matchingTile.variants()
                             .find { it.left == left } ?: error("No orientation")

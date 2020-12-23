@@ -1,6 +1,6 @@
 fun main() {
-    val sample = day23.CrabCups("/day23/sample")
-    val input = day23.CrabCups("/day23/input")
+    val sample = day20.JurassicJigsaw("/day20/sample")
+    val input = day20.JurassicJigsaw("/day20/input")
 
     println("Sample: ${sample.star1()}")
     println("Solution: ${input.star1()}")
