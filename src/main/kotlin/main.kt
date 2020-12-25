@@ -1,6 +1,6 @@
 fun main() {
-    val sample = day24.LobbyLayout("/day24/sample")
-    val input = day24.LobbyLayout("/day24/input")
+    val sample = day25.ComboBreaker("/day25/sample")
+    val input = day25.ComboBreaker("/day25/input")
 
     println("Sample: ${sample.star1()}")
     println("Solution: ${input.star1()}")
